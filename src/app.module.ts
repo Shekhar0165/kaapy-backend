@@ -5,14 +5,17 @@ import { createObserveModule } from '@nestjs/observe';
 import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { AuthModule } from './auth/auth.module.js';
 import { HealthController } from './health.controller.js';
 import { redisProvider } from './redis.provider.js';
+import { ShopModule } from './shop/shop.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ...(process.env.NODE_ENV === 'test' ? [] : [AuthModule, ShopModule]),
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.LOG_LEVEL ?? 'info',
