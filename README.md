@@ -31,6 +31,10 @@
 $ npm install
 ```
 
+Copy `.env.example` to `.env` and set `MONGO_URI` and `REDIS_URL` to your cloud
+connection strings. Set `CORS_ORIGIN` to a comma-separated list of allowed frontend
+origins. The `.env` file is ignored by git and is injected into Docker by Compose.
+
 ## Compile and run the project
 
 ```bash
@@ -43,6 +47,24 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+## Docker
+
+```bash
+docker compose up --build
+```
+
+MongoDB and Redis are external cloud services; Docker runs only the API.
+
+HTTP request logs are written to stdout. Follow them in Docker with:
+
+```bash
+docker compose logs -f api
+```
+
+Logs use `nestjs-pino` and `pino-http` and include the request method, URL,
+status code, response time, and request ID. Set `LOG_LEVEL` to `debug`, `info`,
+`warn`, or `error` in `.env` as needed.
 
 ## Run tests
 
