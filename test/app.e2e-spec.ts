@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import helmet from 'helmet';
 import { AppModule } from './../src/app.module.js';
+import { helmetOptions } from './../src/security/helmet.config.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -13,6 +15,7 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+  app.use(helmet(helmetOptions));
     await app.init();
   });
 
@@ -21,6 +24,28 @@ describe('AppController (e2e)', () => {
       .get('/')
       .expect(200)
       .expect('Hello World!');
+  });
+
+  it('sets the required security headers', async () => {
+    const response = await request(app.getHttpServer()).get('/health');
+
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
+    expect(response.headers['x-frame-options']).toBe('SAMEORIGIN');
+    expect(response.headers['strict-transport-security']).toBe(
+      'max-age=31536000; includeSubDomains; preload',
+    );
+    expect(response.headers['content-security-policy']).toContain(
+      "default-src 'self'",
+    );
+    expect(response.headers['content-security-policy']).toContain(
+      "object-src 'none'",
+    );
+    expect(response.headers['content-security-policy']).not.toContain(
+      'unsafe-inline',
+    );
+    expect(response.headers['content-security-policy']).not.toContain(
+      'default-src *',
+    );
   });
   
   it('/health (GET)', () => {

@@ -44,7 +44,7 @@ export class AuthService {
     const code = this.createCode();
     await this.shopModel.create({
       gmail,
-      passwordHash: this.hashPassword(dto.password),
+      passwordHash: this.hashPassword(dto.password), 
       fullName: dto.fullName,
       shopName: dto.shopName,
       address: dto.address,
