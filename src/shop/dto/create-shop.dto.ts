@@ -37,10 +37,6 @@ export class CreateShopDto {
   @IsNotEmpty()
   gmail!: string;
 
-  @IsOptional()
-  @IsBoolean()
-  isGmailVerify?: boolean;
-
   @IsEnum(ShopProvider)
   @IsNotEmpty()
   provider!: ShopProvider;

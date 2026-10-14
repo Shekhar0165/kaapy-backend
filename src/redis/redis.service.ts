@@ -24,6 +24,16 @@ export class RedisService {
       : this.getClient().set(key, value);
   }
 
+  /** SET NX EX: true when the key was created, false when it already existed. */
+  async setIfAbsent(key: string, value: string, seconds: number): Promise<boolean> {
+    return (await this.getClient().set(key, value, 'EX', seconds, 'NX')) === 'OK';
+  }
+
+  /** Seconds left before the key expires; <= 0 when it is missing or has no expiry. */
+  async ttl(key: string): Promise<number> {
+    return this.getClient().ttl(key);
+  }
+
   delete(key: string): Promise<number> {
     return this.getClient().del(key);
   }
